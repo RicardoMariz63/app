@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Docagem</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        .row {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgb(211, 210, 210);
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            align-items: center;
+        }
+        label {
+            display: block;
+            padding: 5px;
+            margin-bottom: 5px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-align: center;
+            max-width: 70px;
+        }
+    </style>
+
+    <style>
+        .estilizada {
+            width: 100px;
+            height: 150px;
+        border: 2px solid rgb(23, 23, 24);
+        
+        box-shadow: 2px 2px 8px rgb(17, 17, 17);
+        padding: 0px;
+        border-radius: 40%;
+        text-align: center;
+        
+
+        }
+    </style>
+  
+</head>
+<body>
+
+    <h1 style="text-align: center;">Controle Docagem</h1>
+
+    <!-- Primeira Linha -->
+    <div class="row">
+
+        <input type="text" id="input-y-proabombordo2" placeholder=" operador " >
+            <input type="text" id="input-y-proabombordo" placeholder=" valor "  style="background-color: yellow" >
+            <input type="text" id="input-y-proabombordo3" placeholder=" Proa Y " >
+            <input type="text" id="input-y-proabombordo4" placeholder=" hora " >
+            
+        
+    </div>
+
+    <!-- Segunda Linha -->
+    <div class="row">
+        <div class="column" style="text-align: center;">
+            
+            <input type="text" id="input-z-bombordo2" placeholder=" operador " >
+            <input type="text" id="input-z-bombordo" placeholder=" valor "  style="background-color: yellow" >
+            <input type="text" id="input-z-bombordo3" placeholder=" Proa Z BB " >
+            <input type="text" id="input-z-bombordo4" placeholder=" hora " >
+            <br><br>
+            <input type="text" id="input-z-popabombordo2" placeholder=" operador " >
+            <input type="text" id="input-z-popabombordo" placeholder=" valor " style="background-color: yellow">
+            <input type="text" id="input-z-popabombordo3" placeholder=" Popa Z BB " >
+            <input type="text" id="input-z-popabombordo4" placeholder=" hora " >
+            
+            
+        </div>
+        <div class="column">
+            <!--<img src="C:\Users\rmari\Teste\navio.png" alt="foto navio" class="estilizada">-->
+            <img src="navio.png" alt="foto navio" class="estilizada">
+            <br><br>
+            <input type="text" id="input-x-popabombordo2" placeholder=" operador " >
+            <input type="text" id="input-x-bombordo" placeholder=" valor "  style="background-color: yellow">
+            <input type="text" id="input-x-bombordo3" placeholder=" Popa X " >
+            <input type="text" id="input-x-bombordo4" placeholder=" hora " >
+
+
+        </div>
+        <div class="column">
+            <input type="text" id="input-z-boreste2" placeholder=" operador " >
+            <input type="text" id="input-z-boreste" placeholder=" valor "  style="background-color: yellow">
+            <input type="text" id="input-z-boreste3" placeholder=" Proa Z BE " >
+            <input type="text" id="input-z-boreste4" placeholder=" hora " >
+            
+            <br><br>
+
+            <input type="text" id="input-z-popaboreste2" placeholder=" operador " >
+            <input type="text" id="input-z-popaboreste" placeholder=" valor " style="background-color: yellow">
+            <input type="text" id="input-z-popaboreste3" placeholder=" Popa Z BE " >
+            <input type="text" id="input-z-popaboreste4" placeholder=" hora " >
+            
+        </div>
+    </div>
+
+    <!-- Terceira Linha -->
+    <div class="row">
+        <input type="text" id="input-y-popabombordo2" placeholder=" operador " >
+            <input type="text" id="input-y-popabombordo" placeholder=" valor "  style="background-color: yellow" >
+            <input type="text" id="input-y-popabombordo3" placeholder=" Popa Y " >
+            <input type="text" id="input-y-popabombordo4" placeholder=" hora " >
+    </div>
+
+    </div>
+
+    
+    <!-- Botão inferior direito -->
+    <div style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    ">
+        <button id="botao-inferior-direito" onclick="acaoBotao()" style="
+            padding: 15px 25px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: bold;
+        " onmouseover="this.style.backgroundColor='#1976D2'; this.style.transform='scale(1.05)'" onmouseout="this.style.backgroundColor='#2196F3'; this.style.transform='scale(1)'">
+            ⚙️ Solicita Dados
+        </button>
+    </div>
+
+    <script src="/sync.js"></script>
+    <script>
+        // Sistema de habilitação automática de áudio
+        let audioHabilitado = false;
+        
+        // Criar overlay invisível para capturar primeira interação
+        function criarOverlayHabilitacao() {
+       /*     if (audioHabilitado) return;
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'overlay-audio';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.1);
+                z-index: 9999;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: sans-serif;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    text-align: center;
+                    max-width: 300px;
+                ">
+                    <h3>🔊 Sistema de Notificação</h3>
+                    <p>Clique para habilitar notificações sonoras</p>
+                    <button onclick="habilitarAudioReal()" style="
+                        background: #4CAF50;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">✅ Habilitar</button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay); */
+        }
+
+        // Função para habilitar áudio com interação real
+        function habilitarAudioReal() {
+            const overlay = document.getElementById('overlay-audio');
+            
+            if (window.sistemaSync && window.sistemaSync.audioElement) {
+                // Tentar reproduzir com volume baixo
+                window.sistemaSync.audioElement.volume = 0.01;
+                window.sistemaSync.audioElement.play().then(() => {
+                    window.sistemaSync.audioElement.pause();
+                    window.sistemaSync.audioElement.currentTime = 0;
+                    window.sistemaSync.audioElement.volume = 1.0;
+                    
+                    audioHabilitado = true;
+                    console.log('🔊 Áudio habilitado com interação real do usuário!');
+                    
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                    
+                    // Feedback visual
+                    document.body.style.backgroundColor = '#90EE90';
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = '';
+                    }, 1000);
+                    
+                }).catch(e => {
+                    console.log('Erro ao habilitar áudio:', e);
+                });
+            }
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🕒 Sistema de atualização de hora ativo via sync.js');
+            
+            // Aguardar carregamento completo e mostrar overlay
+            setTimeout(() => {
+                criarOverlayHabilitacao();
+            }, 1000);
+        });
+
+        // Função do botão inferior direito
+        function acaoBotao() {
+            console.log('🔧 Botão de configuração clicado');
+            
+            // Feedback visual
+            const botao = document.getElementById('botao-inferior-direito');
+            const textoOriginal = botao.innerHTML;
+            botao.innerHTML = '🔊 Enviando...';
+            botao.style.backgroundColor = '#FF9800';
+            
+            // Enviar comando para tocar alarme2.mp3 nas outras páginas
+            enviarComandoAlarme2().then(() => {
+                botao.innerHTML = '✅ Enviado';
+                botao.style.backgroundColor = '#4CAF50';
+                
+                setTimeout(() => {
+                    botao.innerHTML = textoOriginal;
+                    botao.style.backgroundColor = '#2196F3';
+                }, 2000);
+            }).catch(() => {
+                botao.innerHTML = '❌ Erro';
+                botao.style.backgroundColor = '#F44336';
+                
+                setTimeout(() => {
+                    botao.innerHTML = textoOriginal;
+                    botao.style.backgroundColor = '#2196F3';
+                }, 2000);
+            });
+        }
+
+        // Função para enviar comando de alarme2
+        async function enviarComandoAlarme2() {
+            try {
+                const response = await fetch('/api/dados/comando_alarme2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        comando: 'tocar_alarme2',
+                        timestamp: Date.now()
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Comando de alarme2 enviado com sucesso');
+                } else {
+                    console.error('❌ Erro ao enviar comando de alarme2:', response.statusText);
+                    throw new Error('Erro na resposta do servidor');
+                }
+            } catch (error) {
+                console.error('❌ Erro de rede ao enviar comando:', error);
+                throw error;
+            }
+        }
+
+        // Monitor para debug dos campos de destino
+        setTimeout(function() {
+            const campos = ['input-z-bombordo2', 'input-x-popabombordo2', 'input-y-popabombordo2', 'input-y-proabombordo2'];
+            
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    console.log(`🔍 ${campoId} valor inicial: "${campo.value}"`);
+                    
+                    // Monitor periódico
+                    setInterval(() => {
+                        if (campo.dataset.lastValue !== campo.value) {
+                            console.log(`⚡ ${campoId} mudou para: "${campo.value}"`);
+                            campo.dataset.lastValue = campo.value;
+                        }
+                    }, 500);
+                    
+                    campo.dataset.lastValue = campo.value;
+                }
+            });
+            
+            console.log('🔍 Monitor de campos ativado no controle.html');
+        }, 2000);
+    </script>
+
+</body>
+</html> 
