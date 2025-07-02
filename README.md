@@ -42,6 +42,10 @@ Exemplo: `http://192.168.1.100:5000`
 - **Sincronização em Tempo Real**: Dados sincronizados automaticamente entre máquinas diferentes
 - **Persistência**: Dados salvos no servidor e mantidos entre sessões
 - **Timestamp Automático**: Horário atualizado automaticamente ao inserir valores
+- **Sistema de Login**: Autenticação obrigatória com controle de sessão
+- **Perfis de Usuário**: Admin, Operador, Supervisor e Visualizador
+- **Controle de Acesso**: Páginas e funcionalidades restritas por perfil
+- **Modo Visualização**: Interface somente leitura para perfil Visualizador
 
 ## 🌐 Uso em Rede
 
@@ -86,4 +90,22 @@ Se outros dispositivos não conseguirem acessar, verifique:
 - `POST /api/dados/{campo}` - Atualizar campo específico
 
 ### Arquivo de Teste
-Consulte `TESTE_SINCRONIZACAO.md` para cenários detalhados de teste. 
+Consulte `TESTE_SINCRONIZACAO.md` para cenários detalhados de teste.
+
+## 📚 Documentação Adicional
+
+- `CREDENCIAIS_LOGIN.md` - Credenciais de acesso e instruções de login
+- `SISTEMA_ADMINISTRACAO.md` - Documentação completa do painel administrativo
+- `CONTROLE_ACESSO_PAGINAS.md` - Sistema de controle de acesso granular
+- `CONTROLE_VISUALIZADORES.md` - Funcionalidades específicas para perfil Visualizador
+- `PERFIL_OPERADOR_ATUALIZADO.md` - Mudanças no perfil Operador
+
+## 👤 Credenciais de Teste
+
+### Administrador
+- **E-mail:** `admin@docagem.com`
+- **Senha:** `admin123`
+
+### Visualizador (Teste)
+- **E-mail:** `visual@docagem.com`
+- **Senha:** `hello` 

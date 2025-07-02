@@ -1,7 +1,10 @@
 // Sistema de Sincronização entre Máquinas
 class SistemaSync {
     constructor() {
-        this.intervaloSync = 2000; // Atualizar a cada 2 segundos
+        this.intervaloSync = 5000; // Atualizar a cada 5 segundos (aumentado de 2s para 5s)
+        this.intervaloBase = 5000;
+        this.maxIntervalo = 30000; // Máximo de 30 segundos entre atualizações
+        this.falhasConsecutivas = 0;
         this.ultimaAtualizacao = {};
         this.valoresAnteriores = {}; // Para detectar mudanças vindas de outras páginas
         this.alarmeAtivo = false;
@@ -9,6 +12,8 @@ class SistemaSync {
         this.audioAlarme2 = null;
         this.alarme2Silenciado = false; // Controle de estado do alarme2
         this.ultimoComandoAlarme2 = null; // Para detectar novos comandos
+        this.ultimaRequisicao = null;
+        this.requisicaoEmAndamento = false;
         this.iniciarSincronizacao();
         this.configurarAlarme();
     }
@@ -195,38 +200,87 @@ class SistemaSync {
 
     // Enviar dados para o servidor
     async enviarDados(campo, valor) {
+        if (this.requisicaoEmAndamento) {
+            console.log('Requisição em andamento, aguardando...');
+            return;
+        }
+
         try {
+            this.requisicaoEmAndamento = true;
             const response = await fetch(`/api/dados/${campo}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ valor: valor })
             });
-            
-            if (response.ok) {
-                console.log(`✅ ${campo} atualizado:`, valor);
-            } else {
-                console.error(`❌ Erro ao atualizar ${campo}:`, response.statusText);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            // Resetar contadores em caso de sucesso
+            this.falhasConsecutivas = 0;
+            this.intervaloSync = this.intervaloBase;
+            
+            const data = await response.json();
+            console.log(`✅ Dados enviados com sucesso: ${campo} = ${valor}`);
+            return data;
         } catch (error) {
-            console.error('❌ Erro de rede:', error);
+            console.error('❌ Erro ao enviar dados:', error);
+            this.aumentarIntervalo();
+        } finally {
+            this.requisicaoEmAndamento = false;
         }
     }
 
     // Buscar dados do servidor
     async buscarDados() {
+        // Evitar requisições simultâneas
+        if (this.requisicaoEmAndamento) {
+            console.log('Já existe uma requisição em andamento...');
+            return;
+        }
+
+        // Verificar tempo mínimo entre requisições (1 segundo)
+        const agora = Date.now();
+        if (this.ultimaRequisicao && (agora - this.ultimaRequisicao) < 1000) {
+            console.log('Aguardando tempo mínimo entre requisições...');
+            return;
+        }
+
         try {
+            this.requisicaoEmAndamento = true;
+            this.ultimaRequisicao = agora;
+
             const response = await fetch('/api/dados');
-            if (response.ok) {
-                const dados = await response.json();
-                this.atualizarInterface(dados);
-                return dados;
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const dados = await response.json();
+            
+            // Resetar contadores em caso de sucesso
+            this.falhasConsecutivas = 0;
+            this.intervaloSync = this.intervaloBase;
+            
+            this.atualizarInterface(dados);
         } catch (error) {
             console.error('❌ Erro ao buscar dados:', error);
+            this.aumentarIntervalo();
+        } finally {
+            this.requisicaoEmAndamento = false;
         }
-        return {};
+    }
+
+    // Aumentar intervalo em caso de falhas (backoff exponencial)
+    aumentarIntervalo() {
+        this.falhasConsecutivas++;
+        this.intervaloSync = Math.min(
+            this.intervaloBase * Math.pow(2, this.falhasConsecutivas),
+            this.maxIntervalo
+        );
+        console.log(`⏰ Intervalo ajustado para ${this.intervaloSync}ms após ${this.falhasConsecutivas} falhas`);
     }
 
     // Atualizar interface com dados do servidor
@@ -281,15 +335,24 @@ class SistemaSync {
         }
     }
 
-    // Iniciar sincronização automática
+    // Iniciar sincronização
     iniciarSincronizacao() {
-        // Buscar dados iniciais
+        // Primeira busca imediata
         this.buscarDados();
-        
-        // Atualizar periodicamente
+
+        // Configurar intervalo dinâmico
         setInterval(() => {
-            this.buscarDados();
+            if (!document.hidden) { // Só atualiza se a página estiver visível
+                this.buscarDados();
+            }
         }, this.intervaloSync);
+
+        // Atualizar quando a página voltar a ficar visível
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.buscarDados();
+            }
+        });
     }
 
     // Configurar listeners para um elemento

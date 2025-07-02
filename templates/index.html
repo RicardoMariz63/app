@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Docagem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #a8caba 75%, #5d4e75 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            font-size: 0.95em;
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
+        }
+
+        .central-col {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .label-link {
+            display: block;
+            margin: 15px 0;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .label-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .label-link:hover::before {
+            left: 100%;
+        }
+
+        .label-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .link-icon {
+            font-size: 1.3em;
+            margin-right: 10px;
+        }
+
+        .no-access-message {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px dashed rgba(127, 140, 141, 0.3);
+        }
+
+        /* Cores específicas para cada tipo de link */
+        .link-operacional {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+
+        .link-supervisao {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+
+        .link-administracao {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+        }
+
+        .link-proa-bombordo {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .link-proa-boreste {
+            background: linear-gradient(135deg, #6c5ce7, #5f3dc4);
+        }
+
+        .link-popa-bombordo {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+        }
+
+        .link-popa-boreste {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+        }
+
+        /* Media queries para responsividade */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 15px;
+                padding-top: 100px;
+            }
+            
+            .central-col {
+                padding: 30px 25px;
+                max-width: 350px;
+            }
+            
+            .label-link {
+                padding: 16px 20px;
+                font-size: 1em;
+                margin: 12px 0;
+            }
+
+            .header {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-title {
+                font-size: 1.2em;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px;
+                padding-top: 120px;
+            }
+            
+            .central-col {
+                padding: 25px 20px;
+                max-width: 320px;
+                width: 95%;
+            }
+            
+            .label-link {
+                padding: 14px 18px;
+                font-size: 0.95em;
+                margin: 10px 0;
+            }
+
+            .dashboard-title {
+                font-size: 1.5em;
+                margin-bottom: 25px;
+            }
+
+            .link-icon {
+                font-size: 1.2em;
+                margin-right: 8px;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .central-col {
+                padding: 20px 15px;
+                max-width: 300px;
+            }
+            
+            .label-link {
+                padding: 12px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">
+            🚢 Sistema de Docagem
+        </div>
+        <div class="user-info">
+            👤 <span id="userEmail">Carregando...</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+    
+    <div class="central-col">
+        <div class="dashboard-title">📊 Dashboard</div>
+        <div id="linksContainer">
+            <!-- Links serão gerados dinamicamente baseado nas permissões -->
+        </div>
+    </div>
+
+    <script src="/auth.js"></script>
+    <script>
+        // Mapeamento de páginas disponíveis
+        const paginasDisponiveis = {
+            'ProaBombordo.html': {
+                nome: 'Proa Bombordo',
+                icone: '⚓',
+                classe: 'link-proa-bombordo'
+            },
+            'ProaBoreste.html': {
+                nome: 'Proa Boreste',
+                icone: '⚓',
+                classe: 'link-proa-boreste'
+            },
+            'PopaBombordo.html': {
+                nome: 'Popa Bombordo',
+                icone: '🚢',
+                classe: 'link-popa-bombordo'
+            },
+            'PopaBoreste.html': {
+                nome: 'Popa Boreste',
+                icone: '🚢',
+                classe: 'link-popa-boreste'
+            },
+            'controle.html': {
+                nome: 'Controle Central',
+                icone: '🎛️',
+                classe: 'link-supervisao'
+            },
+            'admin': {
+                nome: 'Administração',
+                icone: '🛠️',
+                classe: 'link-administracao'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const authToken = localStorage.getItem('authToken');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (!authToken || !userEmail) {
+                window.location.href = '/';
+                return;
+            }
+
+            // Exibir informações do usuário
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Carregar páginas permitidas do usuário
+            carregarPaginasPermitidas();
+        });
+
+        async function carregarPaginasPermitidas() {
+            try {
+                const response = await fetch('/api/verificar-token', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const paginasPermitidas = data.paginas_permitidas || [];
+                    
+                    // Armazenar permissões no localStorage
+                    localStorage.setItem('userPermissions', JSON.stringify(data.permissoes || []));
+                    localStorage.setItem('userPages', JSON.stringify(paginasPermitidas));
+                    
+                    // Gerar links dinamicamente
+                    gerarLinks(paginasPermitidas);
+                } else {
+                    // Token inválido, redirecionar para login
+                    logout();
+                }
+            } catch (error) {
+                console.error('Erro ao verificar token:', error);
+                logout();
+            }
+        }
+
+        function gerarLinks(paginasPermitidas) {
+            const container = document.getElementById('linksContainer');
+            
+            if (paginasPermitidas.length === 0) {
+                container.innerHTML = `
+                    <div class="no-access-message">
+                        🔒 Nenhuma página disponível<br>
+                        <small>Entre em contato com o administrador</small>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            paginasPermitidas.forEach(pagina => {
+                const info = paginasDisponiveis[pagina];
+                if (info) {
+                    html += `
+                        <a href="/${pagina}" class="label-link ${info.classe}">
+                            <span class="link-icon">${info.icone}</span>
+                            ${info.nome}
+                        </a>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function logout() {
+            // Limpar dados do localStorage
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userPerfil');
+            localStorage.removeItem('userPermissions');
+            localStorage.removeItem('userPages');
+            
+            // Fazer logout no servidor
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+                }
+            }).finally(() => {
+                window.location.href = '/';
+            });
+        }
+    </script>
+</body>
+</html> 

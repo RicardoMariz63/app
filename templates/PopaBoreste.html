@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popa Boreste - Sistema de Docagem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 50%, #fff9c4 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 234, 167, 0.1), transparent);
+            animation: rotate 6s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            margin-bottom: 35px;
+            color: #34495e;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .controls-section {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-silence {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .btn-activate {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-label {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            max-width: 280px;
+            padding: 15px 20px;
+            border: 2px solid rgba(253, 203, 110, 0.3);
+            border-radius: 15px;
+            font-size: 1.1em;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #fdcb6e;
+            box-shadow: 0 0 20px rgba(253, 203, 110, 0.3);
+            transform: scale(1.02);
+        }
+
+        .form-input::placeholder {
+            color: #95a5a6;
+            font-weight: 400;
+        }
+
+        .value-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .value-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .value-label {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .value-input {
+            width: 120px;
+            padding: 12px 15px;
+            border: 2px solid rgba(253, 203, 110, 0.3);
+            border-radius: 12px;
+            font-size: 1.2em;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .value-input:focus {
+            border-color: #fdcb6e;
+            box-shadow: 0 0 15px rgba(253, 203, 110, 0.4);
+            transform: scale(1.05);
+        }
+
+        .value-input.highlight {
+            background: linear-gradient(135deg, #fff9c4, #ffeaa7);
+            border-color: #fdcb6e;
+        }
+
+        /* Overlay para botão ativar */
+        .activate-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .activate-btn-large {
+            padding: 25px 50px;
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .activate-btn-large:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Responsividade */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 30px 25px;
+                max-width: 400px;
+            }
+
+            .page-title {
+                font-size: 1.6em;
+            }
+
+            .page-subtitle {
+                font-size: 1em;
+            }
+
+            .form-input {
+                max-width: 250px;
+                padding: 12px 18px;
+            }
+
+            .value-input {
+                width: 100px;
+                padding: 10px 12px;
+            }
+
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+                max-width: 350px;
+            }
+
+            .page-title {
+                font-size: 1.4em;
+            }
+
+            .input-group {
+                padding: 20px 15px;
+            }
+
+            .value-row {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .value-input {
+                width: 80px;
+                padding: 8px 10px;
+                font-size: 1.1em;
+            }
+
+            .activate-btn-large {
+                padding: 20px 40px;
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <!-- Controles superiores -->
+            <div class="controls-section">
+                <button class="control-btn btn-silence" onclick="silenciarAlarme2()">
+                    🔇 Silenciar
+                </button>
+            </div>
+
+            <!-- Título da página -->
+            <div class="page-title">🚢 Popa Boreste</div>
+            <div class="page-subtitle">Sistema de Docagem Naval</div>
+
+            <!-- Seção do formulário -->
+            <div class="form-section">
+                <!-- Campo do operador -->
+                <div class="input-group">
+                    <div class="input-label">OPERADOR</div>
+                    <input type="text" class="form-input" id="nomepopaboreste" placeholder="Digite o nome do operador">
+                </div>
+
+                <!-- Campos de valores -->
+                <div class="input-group">
+                    <div class="input-label">MEDIDAS</div>
+                    <div class="value-inputs">
+                        <div class="value-row">
+                            <span class="value-label">X:</span>
+                            <input type="number" class="value-input highlight" id="input-x-row4" placeholder="0" step="0.01">
+                        </div>
+                        <div class="value-row">
+                            <span class="value-label">Y:</span>
+                            <input type="number" class="value-input highlight" id="input-y-row4" placeholder="0" step="0.01">
+                        </div>
+                        <div class="value-row">
+                            <span class="value-label">Z:</span>
+                            <input type="number" class="value-input highlight" id="input-z-row4" placeholder="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay do botão ativar -->
+    <div id="botao-ativar-container" class="activate-overlay">
+        <button class="activate-btn-large" onclick="ativarSistema()">
+            ✅ Ativar Sistema
+        </button>
+    </div>
+
+    <script src="/sync.js"></script>
+    <script>
+        // Habilitar sistema de alarme2 automaticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔊 PopaBoreste.html - Habilitando sistema de alarme2');
+            
+            // Aguardar sistema de sincronização carregar
+            setTimeout(() => {
+                if (window.sistemaSync && window.sistemaSync.audioAlarme2) {
+                    // Tentar habilitar áudio com volume muito baixo
+                    window.sistemaSync.audioAlarme2.volume = 0.01;
+                    window.sistemaSync.audioAlarme2.play().then(() => {
+                        window.sistemaSync.audioAlarme2.pause();
+                        window.sistemaSync.audioAlarme2.currentTime = 0;
+                        window.sistemaSync.audioAlarme2.volume = 0.8;
+                        console.log('✅ Sistema de alarme2 habilitado em PopaBoreste.html');
+                    }).catch(() => {
+                        console.log('⚠️ Aguardando interação para habilitar alarme2');
+                        // Habilitar no primeiro clique
+                        document.addEventListener('click', function habilitarUmaVez() {
+                            if (window.sistemaSync && window.sistemaSync.audioAlarme2) {
+                                window.sistemaSync.audioAlarme2.volume = 0.01;
+                                window.sistemaSync.audioAlarme2.play().then(() => {
+                                    window.sistemaSync.audioAlarme2.pause();
+                                    window.sistemaSync.audioAlarme2.currentTime = 0;
+                                    window.sistemaSync.audioAlarme2.volume = 0.8;
+                                    console.log('✅ Sistema de alarme2 habilitado via clique');
+                                }).catch(() => {});
+                                document.removeEventListener('click', habilitarUmaVez);
+                            }
+                        });
+                    });
+                }
+            }, 2000);
+        });
+
+        // Função para silenciar alarme2
+        function silenciarAlarme2() {
+            if (window.sistemaSync) {
+                window.sistemaSync.silenciarAlarme2Permanente();
+                console.log('🔇 Alarme2 silenciado permanentemente em PopaBoreste.html');
+                
+                // Feedback visual no botão
+                const botao = event.target;
+                const textoOriginal = botao.innerHTML;
+                botao.innerHTML = '✅ Silenciado';
+                botao.style.background = 'linear-gradient(135deg, #fdcb6e, #e17055)';
+                
+                setTimeout(() => {
+                    botao.innerHTML = textoOriginal;
+                    botao.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a52)';
+                }, 3000);
+            }
+        }
+
+        // Função para ativar sistema (oculta overlay)
+        function ativarSistema() {
+            const overlay = document.getElementById('botao-ativar-container');
+            if (overlay) {
+                overlay.style.display = 'none';
+                console.log('✅ Sistema ativado em PopaBoreste.html - Overlay ocultado');
+            }
+        }
+
+        // Script independente para replicação do PopaBoreste
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const campoNome = document.getElementById('nomepopaboreste');
+                
+                if (campoNome) {
+                    console.log('🔄 Configurando replicação nomepopaboreste no PopaBoreste');
+                    
+                    // Função para enviar dados
+                    function enviarNome() {
+                        const valor = campoNome.value.trim();
+                        if (valor) {
+                            fetch('/api/dados/operador_popa_boreste', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ valor: valor })
+                            });
+                        }
+                    }
+                    
+                    // Enviar ao perder foco ou pressionar Enter
+                    campoNome.addEventListener('blur', enviarNome);
+                    campoNome.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            enviarNome();
+                            campoNome.blur();
+                        }
+                    });
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

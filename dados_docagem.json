@@ -1,7 +1,7 @@
 {
   "operador_proa_bombordo": "Ramires",
-  "y_proa_bombordo": "4",
-  "z_bombordo": "3",
+  "y_proa_bombordo": "44",
+  "z_bombordo": "33",
   "operador_proa_boreste": "Elielson",
   "valor_proa_boreste": "5",
   "operador_popa_bombordo": "Carlos",
@@ -12,5 +12,5 @@
   "operador_x_popa_bombordo": "Carlos",
   "x_popa_bombordo": "5",
   "operador_y_popa_bombordo": "Carlos",
-  "y_popa_bombordo": "4"
+  "y_popa_bombordo": "43"
 }

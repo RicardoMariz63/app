@@ -1,0 +1,58 @@
+{
+  "admin@docagem.com": {
+    "senha": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "nome": "Administrador",
+    "perfil": "admin",
+    "ativo": true,
+    "criado_em": "2024-01-01 00:00:00"
+  },
+  "operador@docagem.com": {
+    "senha": "1725165c9a0b3698a3d01016e0d8205155820b8d7f21835ca64c0f81c728d880",
+    "nome": "Operador",
+    "perfil": "operador",
+    "ativo": true,
+    "criado_em": "2024-01-01 00:00:00"
+  },
+  "ricardo@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "Ricardo",
+    "perfil": "operador",
+    "ativo": true,
+    "criado_em": "2024-01-01 00:00:00"
+  },
+  "docagem@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "Docagem",
+    "perfil": "visualizador",
+    "ativo": true,
+    "criado_em": "2024-01-01 00:00:00"
+  },
+  "visual@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "Visualizador",
+    "perfil": "visualizador",
+    "ativo": true,
+    "criado_em": "2025-07-01 14:39:57"
+  },
+  "mario@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "Mário",
+    "perfil": "operador",
+    "ativo": true,
+    "criado_em": "2025-07-02 08:36:50"
+  },
+  "luciano@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "Luciano",
+    "perfil": "popa_boreste",
+    "ativo": true,
+    "criado_em": "2025-07-02 09:18:42"
+  },
+  "elielson@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "elielson@docagem.com",
+    "perfil": "proa_bombordo",
+    "ativo": true,
+    "criado_em": "2025-07-02 10:43:57"
+  }
+}
