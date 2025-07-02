@@ -1,0 +1,103 @@
+{
+  "admin": {
+    "nome": "Administrador",
+    "descricao": "Acesso total ao sistema, pode gerenciar usuários",
+    "permissoes": [
+      "gerenciar_usuarios",
+      "acessar_todas_paginas",
+      "editar_dados",
+      "visualizar_relatorios"
+    ],
+    "paginas_permitidas": [
+      "ProaBombordo.html",
+      "ProaBoreste.html",
+      "PopaBombordo.html",
+      "PopaBoreste.html",
+      "controle.html",
+      "admin"
+    ]
+  },
+  "operador": {
+    "nome": "Operador",
+    "descricao": "Acesso operacional às seções do navio",
+    "permissoes": [
+      "acessar_paginas_operacionais",
+      "editar_dados",
+      "visualizar_relatorios"
+    ],
+    "paginas_permitidas": [
+      "ProaBombordo.html",
+      "ProaBoreste.html",
+      "PopaBombordo.html",
+      "PopaBoreste.html",
+      "TESTE_TEMP"
+    ]
+  },
+  "supervisor": {
+    "nome": "Supervisor",
+    "descricao": "Acesso de supervisão e relatórios",
+    "permissoes": [
+      "acessar_paginas_limitadas",
+      "editar_dados_limitados",
+      "visualizar_relatorios"
+    ],
+    "paginas_permitidas": [
+      "controle.html"
+    ]
+  },
+  "visualizador": {
+    "nome": "Visualizador",
+    "descricao": "Apenas visualização de dados",
+    "permissoes": [
+      "visualizar_dados"
+    ],
+    "paginas_permitidas": [
+      "controle.html"
+    ]
+  },
+  "popa_bombordo": {
+    "nome": "Popa Bombordo",
+    "descricao": "Acesso específico à seção de Popa Bombordo",
+    "permissoes": [
+      "acessar_paginas_operacionais",
+      "editar_dados"
+    ],
+    "paginas_permitidas": [
+      "PopaBombordo.html",
+      "controle.html"
+    ]
+  },
+  "popa_boreste": {
+    "nome": "Popa Boreste",
+    "descricao": "Acesso específico à seção de Popa Boreste",
+    "permissoes": [
+      "acessar_paginas_operacionais",
+      "editar_dados"
+    ],
+    "paginas_permitidas": [
+      "PopaBoreste.html"
+    ]
+  },
+  "proa_bombordo": {
+    "nome": "Proa Bombordo",
+    "descricao": "Acesso específico à seção de Proa Bombordo",
+    "permissoes": [
+      "acessar_paginas_operacionais",
+      "editar_dados"
+    ],
+    "paginas_permitidas": [
+      "ProaBombordo.html"
+    ]
+  },
+  "proa_boreste": {
+    "nome": "Proa Boreste",
+    "descricao": "Acesso específico à seção de Proa Boreste",
+    "permissoes": [
+      "acessar_paginas_operacionais",
+      "editar_dados"
+    ],
+    "paginas_permitidas": [
+      "ProaBoreste.html"
+    ]
+  }
+}

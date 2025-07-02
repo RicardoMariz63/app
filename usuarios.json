@@ -54,5 +54,12 @@
     "perfil": "proa_bombordo",
     "ativo": true,
     "criado_em": "2025-07-02 10:43:57"
+  },
+  "erick@docagem.com": {
+    "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "nome": "erick@docagem.com",
+    "perfil": "proa_bombordo",
+    "ativo": true,
+    "criado_em": "2025-07-02 11:25:24"
   }
 }
