@@ -991,19 +991,56 @@ def atualizar_dados():
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
+@app.route('/api/dados/solicitar', methods=['POST'])
+def solicitar_dados():
+    """Endpoint para solicitar dados - dispara alarme2 nas páginas operacionais"""
+    try:
+        data = request.get_json()
+        comando = data.get('comando', '')
+        timestamp = data.get('timestamp', '')
+
+        print(f"📡 Solicitação de dados recebida: {comando} em {timestamp}")
+
+        if comando == 'solicitar_dados':
+            # Criar comando de alarme2 para disparar nas páginas operacionais
+            comando_alarme2 = {
+                'comando': 'tocar_alarme2',
+                'timestamp': timestamp,
+                'origem': 'solicitar_dados'
+            }
+
+            # Armazenar o comando no sistema (temporário)
+            dados_sistema['comando_alarme2'] = comando_alarme2
+            print(f"🔊 Comando de alarme2 criado para solicitação de dados: {comando_alarme2}")
+
+            return jsonify({
+                'status': 'sucesso',
+                'mensagem': 'Solicitação de dados enviada com sucesso',
+                'comando_alarme2': comando_alarme2
+            })
+        else:
+            return jsonify({
+                'status': 'erro',
+                'mensagem': 'Comando inválido'
+            }), 400
+
+    except Exception as e:
+        print(f"❌ Erro ao processar solicitação de dados: {e}")
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
 @app.route('/api/dados/<campo>', methods=['POST'])
 def atualizar_campo(campo):
     """Atualiza um campo específico"""
     try:
         data = request.get_json()
-        
+
         # Tratamento especial para comando de alarme2
         if campo == 'comando_alarme2':
             dados_sistema[campo] = data
             print(f"🔊 Comando de alarme2 recebido: {data}")
             # Não salva comandos no arquivo (são temporários)
             return jsonify({'status': 'sucesso', 'campo': campo, 'comando': data})
-        
+
         # Tratamento normal para outros campos
         valor = data.get('valor', '')
         if campo in dados_sistema:
