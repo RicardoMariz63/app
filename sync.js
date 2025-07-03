@@ -299,7 +299,7 @@ class SistemaSync {
         
         // Mapear campos do servidor para elementos da interface
         const mapeamento = {
-            'operador_proa_bombordo': ['nomeproabombordo', 'input-z-bombordo2'],
+            'operador_proa_bombordo': ['nomeproabombordo', 'input-row1', 'input-z-bombordo2'],
             'y_proa_bombordo': ['input-y-row4', 'input-y-proabombordo'],
             'z_bombordo': ['input-z-row4', 'input-z-bombordo'],
             'operador_proa_boreste': ['input-row1', 'input-z-boreste2'],
