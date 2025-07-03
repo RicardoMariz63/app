@@ -299,20 +299,20 @@ class SistemaSync {
         
         // Mapear campos do servidor para elementos da interface
         const mapeamento = {
-            'operador_proa_bombordo': ['nomeproabombordo', 'input-row1', 'input-z-bombordo2'],
+            'operador_proa_bombordo': ['nomeproabombordo', 'input-z-bombordo2'],
             'y_proa_bombordo': ['input-y-row4', 'input-y-proabombordo'],
             'z_bombordo': ['input-z-row4', 'input-z-bombordo'],
-            'operador_proa_boreste': ['input-row1', 'input-z-boreste2'],
+            'operador_y_proa_bombordo': ['nomeproabombordo', 'input-y-proabombordo2', 'input-row1'],
+            'operador_proa_boreste': ['nomeproaboreste', 'input-z-boreste2'],
             'valor_proa_boreste': ['input-z-proaboreste', 'input-z-boreste'],
-            'operador_popa_bombordo': ['input-row1', 'input-z-popabombordo2'],
-            'valor_popa_bombordo': ['input-zpopabombordo', 'input-z-popabombordo'],
-            'operador_popa_boreste': ['input-row1', 'input-z-popaboreste2'],
+            'operador_popa_bombordo': ['nomepopabombordo', 'input-z-popabombordo2'],
+            'valor_popa_bombordo': ['input-z-row4', 'input-z-popabombordo'],
+            'operador_popa_boreste': ['nomepopaboreste', 'input-z-popaboreste2'],
             'valor_popa_boreste': ['input-zpopaboreste', 'input-z-popaboreste'],
-            'operador_y_proa_bombordo': ['input-y-proabombordo2'],
-            'operador_x_popa_bombordo': ['input-x-popabombordo2'],
-            'x_popa_bombordo': ['input-x-popabombordo', 'input-x-bombordo'],
-            'operador_y_popa_bombordo': ['input-y-popabombordo2'],
-            'y_popa_bombordo': ['input-y-popabombordo', 'input-y-popabombordo']
+            'operador_x_popa_bombordo': ['nomepopabombordo', 'input-x-popabombordo2'],
+            'x_popa_bombordo': ['input-x-row4', 'input-x-bombordo'],
+            'operador_y_popa_bombordo': ['nomepopabombordo', 'input-y-popabombordo2'],
+            'y_popa_bombordo': ['input-y-row4', 'input-y-popabombordo']
         };
 
         for (const [campo, elementIds] of Object.entries(mapeamento)) {
@@ -433,48 +433,7 @@ class SistemaSync {
         return mapeamentoCampos[elementoId] || null;
     }
 
-    // Configurar replicação direta - NOVA ABORDAGEM
-    configurarReplicacaoDireta() {
-        console.log('🎯 Configurando replicação direta');
-        
-        const campoOrigem = document.getElementById('input-z-popabombordo2');
-        const campoDestino1 = document.getElementById('input-x-popabombordo2');
-        const campoDestino2 = document.getElementById('input-y-popabombordo2');
-        
-        console.log('🔍 Elementos encontrados:');
-        console.log('- Origem (input-z-popabombordo2):', !!campoOrigem);
-        console.log('- Destino 1 (input-x-popabombordo2):', !!campoDestino1);
-        console.log('- Destino 2 (input-y-popabombordo2):', !!campoDestino2);
-        
-        if (campoOrigem && campoDestino1 && campoDestino2) {
-            console.log('✅ Todos os campos encontrados, configurando replicação direta');
-            
-            campoOrigem.addEventListener('input', (e) => {
-                const valor = e.target.value;
-                console.log(`🔄 REPLICAÇÃO DIRETA: Valor "${valor}" digitado em input-z-popabombordo2`);
-                
-                // Replicar para campo X
-                campoDestino1.value = valor;
-                console.log(`✅ Replicado para input-x-popabombordo2: "${valor}"`);
-                campoDestino1.style.backgroundColor = '#FFE4B5';
-                setTimeout(() => { campoDestino1.style.backgroundColor = ''; }, 1000);
-                
-                // Replicar para campo Y
-                campoDestino2.value = valor;
-                console.log(`✅ Replicado para input-y-popabombordo2: "${valor}"`);
-                campoDestino2.style.backgroundColor = '#FFE4B5';
-                setTimeout(() => { campoDestino2.style.backgroundColor = ''; }, 1000);
-                
-                // Enviar dados para o servidor
-                this.enviarDados('operador_x_popa_bombordo', valor);
-                this.enviarDados('operador_y_popa_bombordo', valor);
-            });
-            
-            console.log('🎉 Replicação direta configurada com sucesso!');
-        } else {
-            console.error('❌ Algum campo não foi encontrado para configurar replicação direta');
-        }
-    }
+    // Função removida - agora usando sistema unificado de mapeamento
 
     // Função de teste manual para replicação
     testarReplicacao() {
@@ -570,47 +529,54 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Configurar listeners baseado na página atual
     if (window.location.pathname.includes('ProaBombordo.html')) {
-        sistemaSync.configurarListener('nomeproabombordo', 'operador_proa_bombordo');
+        // Configurar listener especial para nomeproabombordo que alimenta dois campos
+        const campoNome = document.getElementById('nomeproabombordo');
+        if (campoNome) {
+            campoNome.addEventListener('input', async function(e) {
+                const valor = e.target.value;
+                console.log(`🔄 ProaBombordo: Nome alterado para "${valor}"`);
+
+                // Enviar para ambos os campos servidor
+                await sistemaSync.enviarDados('operador_proa_bombordo', valor);
+                await sistemaSync.enviarDados('operador_y_proa_bombordo', valor);
+
+                console.log(`✅ Ambos operadores atualizados com "${valor}"`);
+            });
+        }
+
         sistemaSync.configurarListener('input-y-row4', 'y_proa_bombordo');
         sistemaSync.configurarListener('input-z-row4', 'z_bombordo');
     }
     
     if (window.location.pathname.includes('ProaBoreste.html')) {
-        sistemaSync.configurarListener('input-row1', 'operador_proa_boreste');
+        sistemaSync.configurarListener('nomeproaboreste', 'operador_proa_boreste');
         sistemaSync.configurarListener('input-z-proaboreste', 'valor_proa_boreste');
     }
     
     if (window.location.pathname.includes('PopaBombordo.html')) {
-        // Configurar listener especial para replicação do DOCAGEM
-        const campoDocagem = document.getElementById('input-row1');
-        if (campoDocagem) {
-            campoDocagem.addEventListener('input', async function(e) {
+        // Configurar listener especial para nomepopabombordo que alimenta três campos
+        const campoNome = document.getElementById('nomepopabombordo');
+        if (campoNome) {
+            campoNome.addEventListener('input', async function(e) {
                 const valor = e.target.value;
-                console.log(`🔄 PopaBombordo: DOCAGEM alterado para "${valor}"`);
-                
-                // Replicar para os três campos especificados
-                const campos = [
-                    'operador_popa_bombordo',
-                    'operador_x_popa_bombordo', 
-                    'operador_y_popa_bombordo'
-                ];
-                
-                for (const campo of campos) {
-                    await sistemaSync.enviarDados(campo, valor);
-                    console.log(`✅ ${campo} atualizado com "${valor}"`);
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
+                console.log(`🔄 PopaBombordo: Nome alterado para "${valor}"`);
+
+                // Enviar para os três campos servidor
+                await sistemaSync.enviarDados('operador_popa_bombordo', valor);
+                await sistemaSync.enviarDados('operador_x_popa_bombordo', valor);
+                await sistemaSync.enviarDados('operador_y_popa_bombordo', valor);
+
+                console.log(`✅ Todos os operadores Popa Bombordo atualizados com "${valor}"`);
             });
-            console.log('✅ Replicação DOCAGEM configurada em PopaBombordo.html');
         }
-        
-        sistemaSync.configurarListener('input-x-popabombordo', 'x_popa_bombordo');
-        sistemaSync.configurarListener('input-y-popabombordo', 'y_popa_bombordo');
-        sistemaSync.configurarListener('input-zpopabombordo', 'valor_popa_bombordo');
+
+        sistemaSync.configurarListener('input-x-row4', 'x_popa_bombordo');
+        sistemaSync.configurarListener('input-y-row4', 'y_popa_bombordo');
+        sistemaSync.configurarListener('input-z-row4', 'valor_popa_bombordo');
     }
     
     if (window.location.pathname.includes('PopaBoreste.html')) {
-        sistemaSync.configurarListener('input-row1', 'operador_popa_boreste');
+        sistemaSync.configurarListener('nomepopaboreste', 'operador_popa_boreste');
         sistemaSync.configurarListener('input-zpopaboreste', 'valor_popa_boreste');
     }
     
@@ -636,9 +602,6 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const [elementoId, campo] of Object.entries(camposControle)) {
             sistemaSync.configurarListener(elementoId, campo);
         }
-        
-        // Configurar replicação direta para operadores
-        sistemaSync.configurarReplicacaoDireta();
     }
     
     console.log('🔄 Sistema de sincronização ativado!');
