@@ -14,6 +14,7 @@ class SistemaSync {
         this.ultimoComandoAlarme2 = null; // Para detectar novos comandos
         this.ultimaRequisicao = null;
         this.requisicaoEmAndamento = false;
+        this.sistemaInicializado = false; // Flag para controlar inicialização
         this.iniciarSincronizacao();
         this.configurarAlarme();
     }
@@ -156,7 +157,7 @@ class SistemaSync {
     verificarMudancaExterna(campo, novoValor) {
         const valorAnterior = this.valoresAnteriores[campo] || '';
         const mudouExternamente = valorAnterior !== novoValor && novoValor !== '';
-        
+
         // Campos que devem disparar alarme quando modificados
         const camposAlarme = [
             'operador_proa_bombordo', 'y_proa_bombordo', 'z_bombordo',
@@ -170,16 +171,20 @@ class SistemaSync {
             if (window.location.pathname.includes('controle.html') || window.location.pathname === '/') {
                 this.tocarAlarme();
                 console.log(`🚨 Alarme: ${campo} modificado para "${novoValor}"`);
-                
-                // Atualizar hora quando dados chegam de outras máquinas
-                this.atualizarHoraPorCampoServidor(campo);
+
+                // Atualizar hora apenas se o sistema foi inicializado (evita atualização no carregamento inicial)
+                if (this.sistemaInicializado) {
+                    this.atualizarHoraPorCampoServidor(campo);
+                } else {
+                    console.log(`ℹ️ Sistema não inicializado - alarme tocou mas hora não foi atualizada para ${campo}`);
+                }
             }
         }
 
         this.valoresAnteriores[campo] = novoValor;
     }
 
-    // Atualizar hora baseado no campo do servidor
+    // Atualizar hora baseado no campo do servidor (dados chegando de outras páginas)
     atualizarHoraPorCampoServidor(campoServidor) {
         const mapeamentoServidorParaHora = {
             'y_proa_bombordo': 'input-y-proabombordo4',
@@ -193,8 +198,8 @@ class SistemaSync {
 
         const campoHoraId = mapeamentoServidorParaHora[campoServidor];
         if (campoHoraId) {
-            console.log(`🕒 Sincronização: Atualizando hora para ${campoServidor} → ${campoHoraId}`);
-            this.inserirHoraAtual(campoHoraId);
+            console.log(`🕒 Sincronização: Atualizando hora para ${campoServidor} → ${campoHoraId} (dados de outra página)`);
+            this.inserirHoraAtual(campoHoraId, true); // Forçar atualização quando dados chegam de outras páginas
         }
     }
 
@@ -383,7 +388,7 @@ class SistemaSync {
         }
     }
 
-    // Atualizar hora automaticamente para campos específicos
+    // Atualizar hora automaticamente para campos específicos (quando usuário digita)
     atualizarHoraSeNecessario(elementoId) {
         const mapeamentoHora = {
             'input-y-proabombordo': 'input-y-proabombordo4',
@@ -397,24 +402,39 @@ class SistemaSync {
 
         const campoHoraId = mapeamentoHora[elementoId];
         if (campoHoraId) {
-            console.log(`🕒 Atualizando hora para ${elementoId} → ${campoHoraId}`);
-            this.inserirHoraAtual(campoHoraId);
+            console.log(`🕒 Atualizando hora para ${elementoId} → ${campoHoraId} (usuário digitou)`);
+            this.inserirHoraAtual(campoHoraId, true); // Forçar atualização quando usuário digita
         }
     }
 
-    // Inserir hora atual em um campo
-    inserirHoraAtual(campoHoraId) {
+    // Inserir hora atual em um campo (apenas quando necessário)
+    inserirHoraAtual(campoHoraId, forcarAtualizacao = false) {
         const campoHora = document.getElementById(campoHoraId);
         if (campoHora) {
+            // Se o sistema não foi inicializado e não está forçando, não atualizar
+            if (!this.sistemaInicializado && !forcarAtualizacao) {
+                console.log(`ℹ️ Sistema não inicializado - não atualizando ${campoHoraId}`);
+                return;
+            }
+
+            // Se não forçar atualização e o campo já tem valor, não atualizar
+            if (!forcarAtualizacao && campoHora.value && campoHora.value.trim() !== '') {
+                console.log(`ℹ️ Campo ${campoHoraId} já tem valor: ${campoHora.value} - não atualizando`);
+                return;
+            }
+
             const agora = new Date();
             const hora = agora.getHours().toString().padStart(2, '0');
             const min = agora.getMinutes().toString().padStart(2, '0');
             const seg = agora.getSeconds().toString().padStart(2, '0');
             const horaFormatada = `${hora}:${min}:${seg}`;
-            
+
             campoHora.value = horaFormatada;
             console.log(`✅ Hora inserida em ${campoHoraId}: ${horaFormatada}`);
-            
+
+            // Salvar hora no localStorage para persistência
+            this.salvarHoraLocalStorage(campoHoraId, horaFormatada);
+
             // Feedback visual
             campoHora.style.backgroundColor = '#90EE90'; // Verde claro
             setTimeout(() => {
@@ -422,6 +442,59 @@ class SistemaSync {
             }, 1000);
         } else {
             console.error(`❌ Campo hora ${campoHoraId} não encontrado`);
+        }
+    }
+
+    // Salvar hora no localStorage
+    salvarHoraLocalStorage(campoHoraId, hora) {
+        try {
+            const horasArmazenadas = JSON.parse(localStorage.getItem('horasControle') || '{}');
+            horasArmazenadas[campoHoraId] = hora;
+            localStorage.setItem('horasControle', JSON.stringify(horasArmazenadas));
+            console.log(`💾 Hora salva no localStorage: ${campoHoraId} = ${hora}`);
+        } catch (error) {
+            console.error('❌ Erro ao salvar hora no localStorage:', error);
+        }
+    }
+
+    // Restaurar horas do localStorage
+    restaurarHorasLocalStorage() {
+        try {
+            const horasArmazenadas = JSON.parse(localStorage.getItem('horasControle') || '{}');
+            let horasRestauradas = 0;
+
+            for (const [campoHoraId, hora] of Object.entries(horasArmazenadas)) {
+                const campoHora = document.getElementById(campoHoraId);
+                if (campoHora && hora) {
+                    campoHora.value = hora;
+                    horasRestauradas++;
+                    console.log(`🔄 Hora restaurada: ${campoHoraId} = ${hora}`);
+                }
+            }
+
+            if (horasRestauradas > 0) {
+                console.log(`✅ ${horasRestauradas} horas restauradas do localStorage`);
+            } else {
+                console.log('ℹ️ Nenhuma hora encontrada no localStorage para restaurar');
+            }
+
+            // Marcar sistema como inicializado após restaurar as horas
+            this.sistemaInicializado = true;
+            console.log('🚀 Sistema de horas inicializado - atualizações automáticas habilitadas');
+        } catch (error) {
+            console.error('❌ Erro ao restaurar horas do localStorage:', error);
+            // Mesmo com erro, marcar como inicializado para permitir funcionamento normal
+            this.sistemaInicializado = true;
+        }
+    }
+
+    // Limpar horas do localStorage (função utilitária)
+    limparHorasLocalStorage() {
+        try {
+            localStorage.removeItem('horasControle');
+            console.log('🗑️ Horas do localStorage foram limpas');
+        } catch (error) {
+            console.error('❌ Erro ao limpar horas do localStorage:', error);
         }
     }
 
@@ -582,7 +655,51 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const [elementoId, campo] of Object.entries(camposControle)) {
             sistemaSync.configurarListener(elementoId, campo);
         }
+
+        // Restaurar horas salvas do localStorage após um pequeno delay
+        setTimeout(() => {
+            sistemaSync.restaurarHorasLocalStorage();
+        }, 500);
+
+        console.log('🕒 Sistema de persistência de horas ativado para controle.html');
     }
-    
+
     console.log('🔄 Sistema de sincronização ativado!');
-}); 
+});
+
+// Funções globais para gerenciamento de horas persistentes
+window.limparHorasSalvas = function() {
+    if (window.sistemaSync) {
+        window.sistemaSync.limparHorasLocalStorage();
+        // Limpar também os campos na tela
+        const camposHora = [
+            'input-y-proabombordo4',
+            'input-z-bombordo4',
+            'input-z-popabombordo4',
+            'input-x-bombordo4',
+            'input-z-boreste4',
+            'input-z-popaboreste4',
+            'input-y-popabombordo4'
+        ];
+
+        camposHora.forEach(campoId => {
+            const campo = document.getElementById(campoId);
+            if (campo) {
+                campo.value = '';
+            }
+        });
+
+        console.log('🗑️ Todas as horas foram limpas da tela e do localStorage');
+    }
+};
+
+window.mostrarHorasSalvas = function() {
+    try {
+        const horasArmazenadas = JSON.parse(localStorage.getItem('horasControle') || '{}');
+        console.log('📋 Horas salvas no localStorage:', horasArmazenadas);
+        return horasArmazenadas;
+    } catch (error) {
+        console.error('❌ Erro ao ler horas do localStorage:', error);
+        return {};
+    }
+};
