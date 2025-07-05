@@ -62,8 +62,7 @@
       "editar_dados"
     ],
     "paginas_permitidas": [
-      "PopaBombordo.html",
-      "controle.html"
+      "PopaBombordo.html"
     ]
   },
   "popa_boreste": {

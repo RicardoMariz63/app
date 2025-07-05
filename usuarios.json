@@ -16,7 +16,7 @@
   "ricardo@docagem.com": {
     "senha": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
     "nome": "Ricardo",
-    "perfil": "operador",
+    "perfil": "admin",
     "ativo": true,
     "criado_em": "2024-01-01 00:00:00"
   },

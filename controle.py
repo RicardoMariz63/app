@@ -3,6 +3,7 @@ import json
 import os
 import hashlib
 import secrets
+import threading
 from datetime import datetime, timedelta
 from flask_cors import CORS
 
@@ -134,6 +135,9 @@ PERFIS_PADRAO = {
 # Inicializar PERFIS_ACESSO com os perfis padrão
 PERFIS_ACESSO = PERFIS_PADRAO.copy()
 
+# Lock para controle de concorrência no salvamento de perfis
+perfis_lock = threading.Lock()
+
 # Arquivo para armazenar usuários
 USUARIOS_FILE = 'usuarios.json'
 
@@ -198,18 +202,18 @@ def admin_requerido():
     email = autenticacao_requerida()
     if not email:
         return None
-    
+
     if email not in USUARIOS:
         return None
-    
+
     usuario = USUARIOS[email]
     if not usuario.get('ativo', True):
         return None
-    
+
     perfil = usuario.get('perfil')
     if perfil != 'admin':
         return None
-    
+
     return email
 
 def pagina_requerida(pagina):
@@ -304,131 +308,18 @@ def inicializar_perfis():
     # Garantir que admin tenha acesso a todas as páginas
     PERFIS_ACESSO['admin']['paginas_permitidas'] = list(PAGINAS_DISPONIVEIS.keys())
 
-# Função para salvar alterações nos perfis
+# Função para salvar alterações nos perfis (versão simplificada)
 def salvar_perfis():
     """Salva as alterações nos perfis em um arquivo JSON"""
     try:
-        print("🔄 Iniciando salvamento de perfis...")
+        print("🔄 Iniciando salvamento simplificado de perfis...")
         print(f"📊 Dados atuais dos perfis: {len(PERFIS_ACESSO)} perfis encontrados")
 
-        # Criar backup do arquivo atual se existir
-        if os.path.exists('perfis.json'):
-            try:
-                print("📑 Criando backup do arquivo atual...")
-                with open('perfis.json', 'r', encoding='utf-8') as f:
-                    backup_data = f.read()
-                backup_file = os.path.join(os.environ.get('TEMP', '.'), 'perfis.json.bak')
-                with open(backup_file, 'w', encoding='utf-8') as f:
-                    f.write(backup_data)
-                print(f"✅ Backup criado com sucesso em {backup_file}")
-            except Exception as e:
-                print(f"⚠️ Aviso: Não foi possível criar backup: {e}")
-                print(f"🔍 Detalhes do erro de backup: {type(e).__name__}: {str(e)}")
-
-        # Validar dados antes de salvar
-        print("🔍 Validando dados dos perfis...")
-        for perfil_id, perfil in PERFIS_ACESSO.items():
-            print(f"  ✓ Validando perfil: {perfil_id}")
-            if not isinstance(perfil, dict):
-                raise ValueError(f"Perfil {perfil_id} inválido: deve ser um dicionário")
-            if 'nome' not in perfil or 'permissoes' not in perfil:
-                raise ValueError(f"Perfil {perfil_id} inválido: campos obrigatórios ausentes")
-            if not isinstance(perfil.get('paginas_permitidas', []), list):
-                raise ValueError(f"Perfil {perfil_id} inválido: paginas_permitidas deve ser uma lista")
-        print("✅ Validação concluída com sucesso")
-
-        # Salvar em arquivo temporário primeiro
-        temp_dir = os.environ.get('TEMP', '.')
-        temp_file = os.path.join(temp_dir, f'perfis_{os.getpid()}.json.tmp')
-        print(f"💾 Salvando em arquivo temporário: {temp_file}")
-        print(f"📁 Diretório temporário: {temp_dir}")
-
-        try:
-            print("🔄 Convertendo dados para JSON...")
-            dados_json = json.dumps(PERFIS_ACESSO, ensure_ascii=False, indent=2)
-            print(f"📏 Tamanho dos dados JSON: {len(dados_json)} caracteres")
-
-            print("📝 Escrevendo arquivo temporário...")
-            with open(temp_file, 'w', encoding='utf-8') as f:
-                f.write(dados_json)
-            print("✅ Arquivo temporário escrito com sucesso")
-
-        except Exception as e:
-            print(f"❌ Erro ao escrever arquivo temporário: {e}")
-            print(f"🔍 Tipo do erro: {type(e).__name__}")
-            print(f"🔍 Detalhes: {str(e)}")
-            if os.path.exists(temp_file):
-                print("🗑️ Removendo arquivo temporário corrompido...")
-                os.remove(temp_file)
-            raise
-
-        # Verificar se o arquivo foi escrito corretamente
-        print("🔍 Verificando integridade do arquivo temporário...")
-        try:
-            print(f"📖 Lendo arquivo temporário para verificação: {temp_file}")
-            with open(temp_file, 'r', encoding='utf-8') as f:
-                dados_verificacao = json.load(f)
-                print(f"✅ Arquivo temporário lido com sucesso - {len(dados_verificacao)} perfis")
-
-                # Verificar se os dados são idênticos
-                if dados_verificacao != PERFIS_ACESSO:
-                    print("❌ Dados verificados não correspondem aos dados originais")
-                    print(f"🔍 Perfis originais: {list(PERFIS_ACESSO.keys())}")
-                    print(f"🔍 Perfis verificados: {list(dados_verificacao.keys())}")
-                    raise Exception("Dados verificados não correspondem aos dados originais")
-                print("✅ Verificação de integridade passou")
-
-        except Exception as e:
-            print(f"❌ Erro na verificação do arquivo: {e}")
-            print(f"🔍 Tipo do erro: {type(e).__name__}")
-            if os.path.exists(temp_file):
-                print("🗑️ Removendo arquivo temporário após erro de verificação...")
-                os.remove(temp_file)
-            raise Exception(f"Arquivo temporário corrompido: {e}")
-
-        # Copiar arquivo temporário para o destino final
-        print("📝 Finalizando salvamento...")
-        try:
-            print("📖 Lendo conteúdo do arquivo temporário...")
-            # Ler o conteúdo do arquivo temporário
-            with open(temp_file, 'r', encoding='utf-8') as f_temp:
-                conteudo = f_temp.read()
-            print(f"✅ Conteúdo lido - {len(conteudo)} caracteres")
-
-            print("📝 Escrevendo arquivo final perfis.json...")
-            # Escrever diretamente no arquivo final
-            with open('perfis.json', 'w', encoding='utf-8') as f_final:
-                f_final.write(conteudo)
-            print("✅ Arquivo final escrito com sucesso")
-
-            print("🗑️ Removendo arquivo temporário...")
-            # Remover arquivo temporário
-            os.remove(temp_file)
-            print("✅ Arquivo temporário removido")
-
-        except Exception as e:
-            print(f"❌ Erro ao finalizar salvamento: {e}")
-            print(f"🔍 Tipo do erro: {type(e).__name__}")
-            print(f"🔍 Detalhes: {str(e)}")
-
-            # Tentar restaurar backup se existir
-            backup_file = os.path.join(os.environ.get('TEMP', '.'), 'perfis.json.bak')
-            print(f"🔄 Tentando restaurar backup de: {backup_file}")
-            if os.path.exists(backup_file):
-                try:
-                    print("📖 Lendo backup...")
-                    with open(backup_file, 'r', encoding='utf-8') as f_backup:
-                        backup_content = f_backup.read()
-                    print("📝 Restaurando backup...")
-                    with open('perfis.json', 'w', encoding='utf-8') as f_final:
-                        f_final.write(backup_content)
-                    print("✅ Backup restaurado com sucesso")
-                except Exception as restore_error:
-                    print(f"❌ Erro ao restaurar backup: {restore_error}")
-                    print(f"🔍 Tipo do erro de restore: {type(restore_error).__name__}")
-            else:
-                print("❌ Arquivo de backup não encontrado")
-            raise
+        # Salvar diretamente no arquivo
+        print("📝 Escrevendo arquivo perfis.json...")
+        with open('perfis.json', 'w', encoding='utf-8') as f:
+            json.dump(PERFIS_ACESSO, f, ensure_ascii=False, indent=2)
+        print("✅ Arquivo salvo com sucesso")
 
         print("✅ Perfis salvos com sucesso")
         return True
@@ -438,7 +329,6 @@ def salvar_perfis():
         print(f"🔍 Tipo do erro final: {type(e).__name__}")
         print(f"🔍 Detalhes do erro final: {str(e)}")
         return False
-
 # Função para carregar perfis
 def carregar_perfis():
     """Carrega os perfis do arquivo JSON se existir, mantendo valores padrão"""
@@ -899,14 +789,19 @@ def atualizar_paginas_perfil(perfil_id):
                 'mensagem': 'Erro ao salvar alterações. As mudanças foram revertidas.'
             }), 500
         
-        # Forçar revalidação de tokens para todos os usuários deste perfil
+        # Forçar revalidação de tokens para todos os usuários deste perfil (exceto o admin que está fazendo a alteração)
         print("🔄 Atualizando tokens dos usuários afetados")
-        usuarios_afetados = [email for email, dados in USUARIOS.items() if dados.get('perfil') == perfil_id]
+        usuarios_afetados = [email_user for email_user, dados in USUARIOS.items() if dados.get('perfil') == perfil_id and email_user != email]
         for email_usuario in usuarios_afetados:
             print(f"🔑 Invalidando tokens para: {email_usuario}")
             tokens_para_remover = [token for token, dados in tokens_ativos.items() if dados['email'] == email_usuario]
             for token in tokens_para_remover:
                 del tokens_ativos[token]
+
+        if usuarios_afetados:
+            print(f"🔑 Tokens invalidados para {len(usuarios_afetados)} usuários")
+        else:
+            print("ℹ️ Nenhum token foi invalidado (apenas o admin atual)")
         
         print("✅ Atualização concluída com sucesso")
         return jsonify({
