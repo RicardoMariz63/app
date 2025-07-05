@@ -329,6 +329,16 @@ class SistemaSync {
                     const elemento = document.getElementById(elementId);
                     if (elemento && elemento !== document.activeElement) {
                         elemento.value = valor;
+
+                        // Aplicar formatação condicional se a função existir (controle.html)
+                        if (typeof window.aplicarFormatacaoCondicional === 'function') {
+                            window.aplicarFormatacaoCondicional(elemento);
+                        }
+
+                        // Tornar tick verde se a função existir (controle.html)
+                        if (typeof window.tornarTickVerde === 'function') {
+                            window.tornarTickVerde(elementId);
+                        }
                     }
                 });
             }
@@ -528,56 +538,26 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Configurar listeners baseado na página atual
+    // NOTA: Mantendo apenas sincronização de recebimento, envio será manual via botões
+
     if (window.location.pathname.includes('ProaBombordo.html')) {
-        // Configurar listener especial para nomeproabombordo que alimenta dois campos
-        const campoNome = document.getElementById('nomeproabombordo');
-        if (campoNome) {
-            campoNome.addEventListener('input', async function(e) {
-                const valor = e.target.value;
-                console.log(`🔄 ProaBombordo: Nome alterado para "${valor}"`);
-
-                // Enviar para ambos os campos servidor
-                await sistemaSync.enviarDados('operador_proa_bombordo', valor);
-                await sistemaSync.enviarDados('operador_y_proa_bombordo', valor);
-
-                console.log(`✅ Ambos operadores atualizados com "${valor}"`);
-            });
-        }
-
-        sistemaSync.configurarListener('input-y-row4', 'y_proa_bombordo');
-        sistemaSync.configurarListener('input-z-row4', 'z_bombordo');
+        // Não configurar listeners de envio automático - apenas botões manuais
+        console.log('🔄 ProaBombordo: Configurado para envio manual via botão');
     }
-    
+
     if (window.location.pathname.includes('ProaBoreste.html')) {
-        sistemaSync.configurarListener('nomeproaboreste', 'operador_proa_boreste');
-        sistemaSync.configurarListener('input-z-proaboreste', 'valor_proa_boreste');
+        // Não configurar listeners de envio automático - apenas botões manuais
+        console.log('🔄 ProaBoreste: Configurado para envio manual via botão');
     }
-    
+
     if (window.location.pathname.includes('PopaBombordo.html')) {
-        // Configurar listener especial para nomepopabombordo que alimenta três campos
-        const campoNome = document.getElementById('nomepopabombordo');
-        if (campoNome) {
-            campoNome.addEventListener('input', async function(e) {
-                const valor = e.target.value;
-                console.log(`🔄 PopaBombordo: Nome alterado para "${valor}"`);
-
-                // Enviar para os três campos servidor
-                await sistemaSync.enviarDados('operador_popa_bombordo', valor);
-                await sistemaSync.enviarDados('operador_x_popa_bombordo', valor);
-                await sistemaSync.enviarDados('operador_y_popa_bombordo', valor);
-
-                console.log(`✅ Todos os operadores Popa Bombordo atualizados com "${valor}"`);
-            });
-        }
-
-        sistemaSync.configurarListener('input-x-row4', 'x_popa_bombordo');
-        sistemaSync.configurarListener('input-y-row4', 'y_popa_bombordo');
-        sistemaSync.configurarListener('input-z-row4', 'valor_popa_bombordo');
+        // Não configurar listeners de envio automático - apenas botões manuais
+        console.log('🔄 PopaBombordo: Configurado para envio manual via botão');
     }
-    
+
     if (window.location.pathname.includes('PopaBoreste.html')) {
-        sistemaSync.configurarListener('nomepopaboreste', 'operador_popa_boreste');
-        sistemaSync.configurarListener('input-zpopaboreste', 'valor_popa_boreste');
+        // Não configurar listeners de envio automático - apenas botões manuais
+        console.log('🔄 PopaBoreste: Configurado para envio manual via botão');
     }
     
     if (window.location.pathname.includes('controle.html')) {

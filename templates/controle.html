@@ -61,6 +61,64 @@
         .voltar:hover {
             background: #0056b3;
         }
+
+        /* Estilos para formatação condicional dos valores numéricos */
+        .valor-alto {
+            background-color: #ffff00 !important; /* Amarelo */
+            color: black !important;
+        }
+
+        .valor-medio {
+            background-color: #28a745 !important; /* Verde */
+            color: white !important;
+        }
+
+        .valor-medio-preto {
+            background-color: #28a745 !important; /* Verde */
+            color: black !important;
+        }
+
+        .valor-zero {
+            background-color: white !important;
+            color: black !important;
+        }
+
+        .valor-negativo {
+            background-color: #e91f1f !important; /* Vermelho claro */
+            color: rgb(248, 247, 247) !important;
+        }
+
+        /* Estilos para ícones de tick verde */
+        .tick-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #28a745;
+            border-radius: 50%;
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .tick-icon::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .hora-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Tick vermelho para estado de solicitação */
+        .tick-icon.vermelho {
+            background-color: #dc3545;
+        }
         .estilizada {
             width: 100px;
             height: 150px;
@@ -119,7 +177,10 @@
         <input type="text" id="input-row1" placeholder=" operador " >
         <input type="text" id="input-y-proabombordo" placeholder=" valor "  style="background-color: yellow" >
         <input type="text" id="input-y-proabombordo3" placeholder=" Proa Y " >
-        <input type="text" id="input-y-proabombordo4" placeholder=" hora " >
+        <div class="hora-container">
+            <input type="text" id="input-y-proabombordo4" placeholder=" hora " >
+            <div class="tick-icon" id="tick-y-proabombordo"></div>
+        </div>
     </div>
 
     <!-- Segunda Linha -->
@@ -128,12 +189,18 @@
             <input type="text" id="input-z-bombordo2" placeholder=" operador " >
             <input type="text" id="input-z-bombordo" placeholder=" valor "  style="background-color: yellow" >
             <input type="text" id="input-z-bombordo3" placeholder=" Proa Z BB " >
-            <input type="text" id="input-z-bombordo4" placeholder=" hora " >
+            <div class="hora-container">
+                <input type="text" id="input-z-bombordo4" placeholder=" hora " >
+                <div class="tick-icon" id="tick-z-bombordo"></div>
+            </div>
             <br><br>
             <input type="text" id="input-z-popabombordo2" placeholder=" operador " >
             <input type="text" id="input-z-popabombordo" placeholder=" valor " style="background-color: yellow">
             <input type="text" id="input-z-popabombordo3" placeholder=" Popa Z BB " >
-            <input type="text" id="input-z-popabombordo4" placeholder=" hora " >
+            <div class="hora-container">
+                <input type="text" id="input-z-popabombordo4" placeholder=" hora " >
+                <div class="tick-icon" id="tick-z-popabombordo"></div>
+            </div>
         </div>
         <div class="column">
             <img src="navio.png" alt="foto navio" class="estilizada">
@@ -141,18 +208,27 @@
             <input type="text" id="input-x-popabombordo2" placeholder=" operador " >
             <input type="text" id="input-x-bombordo" placeholder=" valor "  style="background-color: yellow">
             <input type="text" id="input-x-bombordo3" placeholder=" Popa X " >
-            <input type="text" id="input-x-bombordo4" placeholder=" hora " >
+            <div class="hora-container">
+                <input type="text" id="input-x-bombordo4" placeholder=" hora " >
+                <div class="tick-icon" id="tick-x-bombordo"></div>
+            </div>
         </div>
         <div class="column">
             <input type="text" id="input-z-boreste2" placeholder=" operador " >
             <input type="text" id="input-z-boreste" placeholder=" valor "  style="background-color: yellow">
             <input type="text" id="input-z-boreste3" placeholder=" Proa Z BE " >
-            <input type="text" id="input-z-boreste4" placeholder=" hora " >
+            <div class="hora-container">
+                <input type="text" id="input-z-boreste4" placeholder=" hora " >
+                <div class="tick-icon" id="tick-z-boreste"></div>
+            </div>
             <br><br>
             <input type="text" id="input-z-popaboreste2" placeholder=" operador " >
             <input type="text" id="input-z-popaboreste" placeholder=" valor " style="background-color: yellow">
-            <input type="text" id="input-z-popaboreste3" placeholder=" Popa Z BE " >
-            <input type="text" id="input-z-popaboreste4" placeholder=" hora " >
+            <input type="text" id="input-z-popaboreste3" placeholder " Popa Z BE " >
+            <div class="hora-container">
+                <input type="text" id="input-z-popaboreste4" placeholder=" hora " >
+                <div class="tick-icon" id="tick-z-popaboreste"></div>
+            </div>
         </div>
     </div>
 
@@ -161,7 +237,10 @@
         <input type="text" id="input-y-popabombordo2" placeholder=" operador " >
         <input type="text" id="input-y-popabombordo" placeholder=" valor "  style="background-color: yellow" >
         <input type="text" id="input-y-popabombordo3" placeholder=" Popa Y " >
-        <input type="text" id="input-y-popabombordo4" placeholder=" hora " >
+        <div class="hora-container">
+            <input type="text" id="input-y-popabombordo4" placeholder=" hora " >
+            <div class="tick-icon" id="tick-y-popabombordo"></div>
+        </div>
     </div>
 
     <!-- Botão de solicitação -->
@@ -242,6 +321,43 @@
             habilitarAudioSilencioso();
         });
 
+        // Mapeamento de campos de valor para seus ticks correspondentes
+        const mapeamentoTicks = {
+            'input-y-proabombordo': 'tick-y-proabombordo',
+            'input-z-bombordo': 'tick-z-bombordo',
+            'input-z-popabombordo': 'tick-z-popabombordo',
+            'input-x-bombordo': 'tick-x-bombordo',
+            'input-z-boreste': 'tick-z-boreste',
+            'input-z-popaboreste': 'tick-z-popaboreste',
+            'input-y-popabombordo': 'tick-y-popabombordo'
+        };
+
+        // Função para tornar todos os ticks vermelhos
+        function tornarTicksVermelhos() {
+            Object.values(mapeamentoTicks).forEach(tickId => {
+                const tick = document.getElementById(tickId);
+                if (tick) {
+                    tick.classList.add('vermelho');
+                }
+            });
+            console.log('🔴 Todos os ticks ficaram vermelhos - aguardando dados...');
+        }
+
+        // Função para tornar um tick específico verde
+        function tornarTickVerde(campoId) {
+            const tickId = mapeamentoTicks[campoId];
+            if (tickId) {
+                const tick = document.getElementById(tickId);
+                if (tick) {
+                    tick.classList.remove('vermelho');
+                    console.log(`🟢 Tick ${tickId} voltou ao verde - dados recebidos para ${campoId}`);
+                }
+            }
+        }
+
+        // Expor função globalmente para o sync.js
+        window.tornarTickVerde = tornarTickVerde;
+
         // Função do botão inferior direito
         function acaoBotao() {
             console.log('🔧 Botão de configuração clicado');
@@ -256,6 +372,9 @@
                 return;
             }
             
+            // Tornar todos os ticks vermelhos
+            tornarTicksVermelhos();
+
             // Feedback visual
             const botao = document.getElementById('botao-inferior-direito');
             const textoOriginal = botao.innerHTML;
@@ -299,6 +418,118 @@
                 }, 3000);
             });
         }
+
+        // Função para aplicar formatação condicional baseada no valor
+        function aplicarFormatacaoCondicional(elemento) {
+            if (!elemento) return;
+
+            const valor = parseFloat(elemento.value);
+            const elementoId = elemento.id;
+
+            // Remover todas as classes de formatação
+            elemento.classList.remove('valor-alto', 'valor-medio', 'valor-medio-preto', 'valor-zero', 'valor-negativo');
+
+            // Aplicar formatação baseada no valor
+            if (!isNaN(valor)) {
+                // Regras especiais para X Popa BB, Y Popa BB e Y Proa BB (verde com letra branca para negativos pequenos)
+                if (elementoId === 'input-x-bombordo' || elementoId === 'input-y-popabombordo' || elementoId === 'input-y-proabombordo') {
+                    if (valor > 49) {
+                        elemento.classList.add('valor-alto'); // Amarelo com letra preta
+                    } else if (valor > 0 && valor <= 49) {
+                        elemento.classList.add('valor-medio'); // Verde com letra branca
+                    } else if (valor === 0) {
+                        elemento.classList.add('valor-zero'); // Branco com letra preta
+                    } else if (valor < 0 && valor > -50) {
+                        elemento.classList.add('valor-medio'); // Verde com letra branca (valores negativos pequenos)
+                    } else if (valor <= -50) {
+                        elemento.classList.add('valor-alto'); // Amarelo com letra preta (valores muito negativos)
+                    }
+                }
+                // Regras especiais para Z Popa BE, Z Popa BB, Z Proa BE e Z Proa BB (verde com letra preta para negativos pequenos)
+                else if (elementoId === 'input-z-bombordo' || elementoId === 'input-z-popabombordo' || elementoId === 'input-z-boreste' || elementoId === 'input-z-popaboreste') {
+                    if (valor > 49) {
+                        elemento.classList.add('valor-alto'); // Amarelo com letra preta
+                    } else if (valor > 0 && valor <= 49) {
+                        elemento.classList.add('valor-medio'); // Verde com letra branca
+                    } else if (valor === 0) {
+                        elemento.classList.add('valor-zero'); // Branco com letra preta
+                    } else if (valor < 0 && valor > -50) {
+                        elemento.classList.add('valor-medio-preto'); // Verde com letra preta (valores negativos pequenos)
+                    } else if (valor <= -50) {
+                        elemento.classList.add('valor-alto'); // Amarelo com letra preta (valores muito negativos)
+                    }
+                } else {
+                    // Regras padrão para outros campos (se houver)
+                    if (valor > 49) {
+                        elemento.classList.add('valor-alto'); // Amarelo com letra preta
+                    } else if (valor > 0 && valor <= 49) {
+                        elemento.classList.add('valor-medio'); // Verde com letra branca
+                    } else if (valor === 0) {
+                        elemento.classList.add('valor-zero'); // Branco com letra preta
+                    } else if (valor < 0) {
+                        elemento.classList.add('valor-negativo'); // Vermelho com letra branca
+                    }
+                }
+            }
+        }
+
+        // Lista de IDs dos campos numéricos (campos amarelos de valor)
+        const camposNumericos = [
+            'input-y-proabombordo',    // Y Proa BB (regras especiais: neg. pequenos = verde/branco)
+            'input-z-bombordo',        // Z Proa BB (regras especiais: neg. pequenos = verde/preto)
+            'input-z-popabombordo',    // Z Popa BB (regras especiais: neg. pequenos = verde/preto)
+            'input-x-bombordo',        // X Popa BB (regras especiais: neg. pequenos = verde/branco)
+            'input-z-boreste',         // Z Proa BE (regras especiais: neg. pequenos = verde/preto)
+            'input-z-popaboreste',     // Z Popa BE (regras especiais: neg. pequenos = verde/preto)
+            'input-y-popabombordo'     // Y Popa BB (regras especiais: neg. pequenos = verde/branco)
+        ];
+
+        // Configurar monitoramento dos campos numéricos
+        function configurarFormatacaoCondicional() {
+            camposNumericos.forEach(campoId => {
+                const elemento = document.getElementById(campoId);
+                if (elemento) {
+                    // Aplicar formatação inicial
+                    aplicarFormatacaoCondicional(elemento);
+
+                    // Monitorar mudanças no valor
+                    elemento.addEventListener('input', function() {
+                        aplicarFormatacaoCondicional(this);
+                    });
+
+                    // Monitorar quando o campo perde o foco
+                    elemento.addEventListener('blur', function() {
+                        aplicarFormatacaoCondicional(this);
+                    });
+
+                    console.log(`✅ Formatação condicional configurada para: ${campoId}`);
+                }
+            });
+        }
+
+        // Função para verificar periodicamente os valores (para sincronização)
+        function verificarValoresPeriodicamente() {
+            camposNumericos.forEach(campoId => {
+                const elemento = document.getElementById(campoId);
+                if (elemento) {
+                    aplicarFormatacaoCondicional(elemento);
+                }
+            });
+        }
+
+        // Expor função globalmente para o sync.js
+        window.aplicarFormatacaoCondicional = aplicarFormatacaoCondicional;
+
+        // Inicializar formatação condicional quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                configurarFormatacaoCondicional();
+                console.log('🎨 Sistema de formatação condicional inicializado');
+
+                // Verificar valores a cada 2 segundos para capturar mudanças da sincronização
+                setInterval(verificarValoresPeriodicamente, 2000);
+            }, 1000);
+        });
     </script>
 </body>
-</html> 
+</html>

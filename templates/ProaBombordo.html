@@ -257,6 +257,35 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
         }
 
+        /* Botão de Envio */
+        .enviar-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .enviar-btn:hover {
+            background: linear-gradient(135deg, #218838, #1ea085);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .enviar-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+        }
+
         /* Responsividade */
         @media screen and (max-width: 768px) {
             body {
@@ -363,6 +392,13 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Botão de Envio -->
+                <div class="input-group" style="margin-top: 30px;">
+                    <button class="enviar-btn" onclick="enviarDadosFormulario()">
+                        📤 Enviar Dados
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -438,35 +474,69 @@
             }
         }
 
-        // Script independente para replicação do ProaBombordo
+        // Função para enviar todos os dados do formulário
+        function enviarDadosFormulario() {
+            const campoNome = document.getElementById('nomeproabombordo');
+            const campoY = document.getElementById('input-y-row4');
+            const campoZ = document.getElementById('input-z-row4');
+
+            const nomeOperador = campoNome.value.trim();
+            const valorY = campoY.value.trim();
+            const valorZ = campoZ.value.trim();
+
+            if (!nomeOperador) {
+                alert('Por favor, digite o nome do operador antes de enviar.');
+                campoNome.focus();
+                return;
+            }
+
+            console.log('📤 ProaBombordo: Enviando dados do formulário...');
+
+            // Enviar nome do operador para os dois campos
+            const promessas = [
+                fetch('/api/dados/operador_proa_bombordo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ valor: nomeOperador })
+                }),
+                fetch('/api/dados/operador_y_proa_bombordo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ valor: nomeOperador })
+                })
+            ];
+
+            // Enviar valores se preenchidos
+            if (valorY) {
+                promessas.push(fetch('/api/dados/y_proa_bombordo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ valor: valorY })
+                }));
+            }
+
+            if (valorZ) {
+                promessas.push(fetch('/api/dados/z_bombordo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ valor: valorZ })
+                }));
+            }
+
+            // Executar todas as requisições
+            Promise.all(promessas)
+                .then(() => {
+                    console.log('✅ ProaBombordo: Todos os dados enviados com sucesso!');
+                })
+                .catch(error => {
+                    console.error('❌ ProaBombordo: Erro ao enviar dados:', error);
+                });
+        }
+
+        // Script independente para ProaBombordo (sem envio automático)
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
-                const campoNome = document.getElementById('nomeproabombordo');
-                
-                if (campoNome) {
-                    console.log('🔄 Configurando replicação nomeproabombordo no ProaBombordo');
-                    
-                    // Função para enviar dados
-                    function enviarNome() {
-                        const valor = campoNome.value.trim();
-                        if (valor) {
-                            fetch('/api/dados/operador_proa_bombordo', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ valor: valor })
-                            });
-                        }
-                    }
-                    
-                    // Enviar ao perder foco ou pressionar Enter
-                    campoNome.addEventListener('blur', enviarNome);
-                    campoNome.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            enviarNome();
-                            campoNome.blur();
-                        }
-                    });
-                }
+                console.log('🔄 ProaBombordo: Sistema configurado para envio manual');
             }, 2000);
         });
     </script>
